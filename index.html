@@ -29,12 +29,13 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
         }
-        .card-hover {
-            transition: all 0.3s ease;
+        .table-row-hover {
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
-        .card-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(10, 77, 60, 0.15);
+        .table-row-hover:hover {
+            background-color: #f3f4f6;
+            transform: scale(1.005);
         }
         .status-pulse {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -73,16 +74,13 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <div class="text-right mr-3">
+                    <div class="text-right">
                         <p class="text-xs text-gray-500">Edge Status</p>
                         <p class="text-sm font-semibold text-hawk-secondary flex items-center">
                             <span class="w-2 h-2 bg-hawk-secondary rounded-full mr-2 status-pulse"></span>
                             3 Devices Online
                         </p>
                     </div>
-                    <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium text-sm">
-                        Settings
-                    </button>
                 </div>
             </div>
         </header>
@@ -102,7 +100,7 @@
             </div>
         </div>
 
-        <!-- RULES VIEW -->
+        <!-- RULES VIEW (Table) -->
         <div id="rules-view" class="tab-content">
             
             <!-- Action Bar -->
@@ -123,242 +121,148 @@
                 </button>
             </div>
 
-            <!-- Rules Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <!-- Rule Card 1 -->
-                <div class="glass-effect rounded-xl p-6 shadow-md border border-gray-200 card-hover">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900">Fire Alarm Response</h3>
-                                <p class="text-xs text-gray-500 mt-0.5">ID: fire_rule_1</p>
-                            </div>
-                        </div>
-                        <button class="text-gray-400 hover:text-gray-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="space-y-3 mb-4">
-                        <div class="flex items-start space-x-2">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-semibold text-gray-700">Trigger</p>
-                                <p class="text-sm text-gray-600">Fire Detected (confidence ≥ 0.8)</p>
-                                <span class="badge bg-gray-100 text-gray-700 mt-1">Zone: Warehouse</span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-2">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
-                            </svg>
-                            <div class="flex-1">
-                                <p class="text-sm font-semibold text-gray-700 mb-2">Actions</p>
-                                <div class="space-y-1.5">
-                                    <div class="flex items-center justify-between bg-red-50 px-3 py-2 rounded-lg">
-                                        <span class="text-xs font-medium text-red-700">Alarm → Turn On</span>
-                                        <span class="text-xs text-red-600">steady, 20s</span>
+            <!-- Rules Table -->
+            <div class="glass-effect rounded-xl shadow-md border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-hawk-primary to-hawk-secondary text-white">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Rule Name</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Trigger</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Actions</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Target Devices</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Last Triggered</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <!-- Rule Row 1 -->
+                            <tr class="table-row-hover" onclick="editRule('fire_rule_1')">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Fire Alarm Response</p>
+                                            <p class="text-xs text-gray-500">ID: fire_rule_1</p>
+                                        </div>
                                     </div>
-                                    <div class="flex items-center justify-between bg-orange-50 px-3 py-2 rounded-lg">
-                                        <span class="text-xs font-medium text-orange-700">Machine Power → Stop All</span>
-                                        <span class="text-xs text-orange-600">immediate</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">Fire Detected</p>
+                                    <p class="text-xs text-gray-600">Confidence ≥ 0.8</p>
+                                    <span class="badge bg-gray-100 text-gray-700 mt-1">Zone: Warehouse</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="space-y-1">
+                                        <span class="badge bg-red-50 text-red-700">Alarm → Turn On</span>
+                                        <span class="badge bg-orange-50 text-orange-700">Machine Power → Stop</span>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-xs space-y-0.5">
+                                        <p class="text-gray-700">• Hooter Warehouse 1</p>
+                                        <p class="text-gray-700">• CNC Machine A1</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full status-pulse"></span>
+                                        <span class="text-sm font-medium text-green-700">Active</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-600">2 hours ago</p>
+                                </td>
+                            </tr>
 
-                        <div class="flex items-start space-x-2">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-semibold text-gray-700 mb-1.5">Target Devices</p>
-                                <div class="flex flex-wrap gap-1.5">
-                                    <span class="badge bg-hawk-light text-hawk-primary">Hooter Warehouse 1</span>
-                                    <span class="badge bg-hawk-light text-hawk-primary">CNC Machine A1</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                            <!-- Rule Row 2 -->
+                            <tr class="table-row-hover" onclick="editRule('gate_entry_rule')">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Site Entry Gate Auto</p>
+                                            <p class="text-xs text-gray-500">ID: gate_entry_rule</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">ANPR Match</p>
+                                    <p class="text-xs text-gray-600">Confidence ≥ 0.95</p>
+                                    <span class="badge bg-gray-100 text-gray-700 mt-1">Zone: Gate 1</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="badge bg-green-50 text-green-700">Access Control → Open</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-xs space-y-0.5">
+                                        <p class="text-gray-700">• Gate 12 Controller</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full status-pulse"></span>
+                                        <span class="text-sm font-medium text-green-700">Active</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-600">15 mins ago</p>
+                                </td>
+                            </tr>
 
-                    <div class="flex items-center justify-between pt-3 border-t border-gray-200">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-2 h-2 bg-green-500 rounded-full status-pulse"></span>
-                            <span class="text-sm font-medium text-green-700">Active</span>
-                        </div>
-                        <div class="flex items-center space-x-2 text-xs text-gray-500">
-                            <span>Last triggered: 2 hours ago</span>
-                        </div>
-                    </div>
+                            <!-- Rule Row 3 -->
+                            <tr class="table-row-hover" onclick="editRule('spill_alert_1')">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Material Spill Alert</p>
+                                            <p class="text-xs text-gray-500">ID: spill_alert_1</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">Material Spill</p>
+                                    <p class="text-xs text-gray-600">Confidence ≥ 0.85</p>
+                                    <span class="badge bg-gray-100 text-gray-700 mt-1">Production Floor</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="badge bg-purple-50 text-purple-700">Alarm → Turn On</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-xs space-y-0.5">
+                                        <p class="text-gray-700">• Hooter East</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+                                        <span class="text-sm font-medium text-gray-600">Inactive</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-600">Never</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-
-                <!-- Rule Card 2 -->
-                <div class="glass-effect rounded-xl p-6 shadow-md border border-gray-200 card-hover">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900">Site Entry Gate Auto</h3>
-                                <p class="text-xs text-gray-500 mt-0.5">ID: gate_entry_rule</p>
-                            </div>
-                        </div>
-                        <button class="text-gray-400 hover:text-gray-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="space-y-3 mb-4">
-                        <div class="flex items-start space-x-2">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-semibold text-gray-700">Trigger</p>
-                                <p class="text-sm text-gray-600">ANPR Match (confidence ≥ 0.95)</p>
-                                <span class="badge bg-gray-100 text-gray-700 mt-1">Zone: Gate 1</span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-2">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-semibold text-gray-700 mb-1.5">Condition</p>
-                                <div class="bg-blue-50 px-3 py-2 rounded-lg">
-                                    <p class="text-xs font-medium text-blue-700">If license plate is whitelisted</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-2">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
-                            </svg>
-                            <div class="flex-1">
-                                <p class="text-sm font-semibold text-gray-700 mb-2">Actions</p>
-                                <div class="flex items-center justify-between bg-green-50 px-3 py-2 rounded-lg">
-                                    <span class="text-xs font-medium text-green-700">Access Control → Open</span>
-                                    <span class="text-xs text-green-600">5s duration</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-2">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-semibold text-gray-700 mb-1.5">Target Devices</p>
-                                <div class="flex flex-wrap gap-1.5">
-                                    <span class="badge bg-hawk-light text-hawk-primary">Gate 12 Controller</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-3 border-t border-gray-200">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-2 h-2 bg-green-500 rounded-full status-pulse"></span>
-                            <span class="text-sm font-medium text-green-700">Active</span>
-                        </div>
-                        <div class="flex items-center space-x-2 text-xs text-gray-500">
-                            <span>Last triggered: 15 mins ago</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Rule Card 3 -->
-                <div class="glass-effect rounded-xl p-6 shadow-md border border-gray-200 card-hover opacity-75">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900">Material Spill Alert</h3>
-                                <p class="text-xs text-gray-500 mt-0.5">ID: spill_alert_1</p>
-                            </div>
-                        </div>
-                        <button class="text-gray-400 hover:text-gray-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="space-y-3 mb-4">
-                        <div class="flex items-start space-x-2">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-semibold text-gray-700">Trigger</p>
-                                <p class="text-sm text-gray-600">Material Spill (confidence ≥ 0.85)</p>
-                                <span class="badge bg-gray-100 text-gray-700 mt-1">Zone: Production Floor</span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-2">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
-                            </svg>
-                            <div class="flex-1">
-                                <p class="text-sm font-semibold text-gray-700 mb-2">Actions</p>
-                                <div class="flex items-center justify-between bg-purple-50 px-3 py-2 rounded-lg">
-                                    <span class="text-xs font-medium text-purple-700">Alarm → Turn On</span>
-                                    <span class="text-xs text-purple-600">pulse, 30s</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-2">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-semibold text-gray-700 mb-1.5">Target Devices</p>
-                                <div class="flex flex-wrap gap-1.5">
-                                    <span class="badge bg-hawk-light text-hawk-primary">Hooter East</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-3 border-t border-gray-200">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-                            <span class="text-sm font-medium text-gray-600">Inactive</span>
-                        </div>
-                        <div class="flex items-center space-x-2 text-xs text-gray-500">
-                            <span>Never triggered</span>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
 
-        <!-- DEVICES VIEW -->
+        <!-- DEVICES VIEW (Table) -->
         <div id="devices-view" class="tab-content hidden">
             
             <!-- Action Bar -->
@@ -379,494 +283,395 @@
                 </button>
             </div>
 
-            <!-- Devices Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                
-                <!-- Device Card 1 -->
-                <div class="glass-effect rounded-xl p-6 shadow-md border border-gray-200 card-hover">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center shadow-md">
-                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-base font-bold text-gray-900">Hooter Warehouse 1</h3>
-                                <p class="text-xs text-gray-500 mt-0.5">ID: hooter_wh_1</p>
-                            </div>
-                        </div>
-                        <button class="text-gray-400 hover:text-gray-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                            </svg>
-                        </button>
-                    </div>
+            <!-- Devices Table -->
+            <div class="glass-effect rounded-xl shadow-md border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-hawk-primary to-hawk-secondary text-white">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Device Name</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Edge Device</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Capabilities</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Connector</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Hardware Details</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Used in Rules</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <!-- Device Row 1 -->
+                            <tr class="table-row-hover" onclick="editDevice('hooter_wh_1')">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center shadow-md">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Hooter Warehouse 1</p>
+                                            <p class="text-xs text-gray-500">ID: hooter_wh_1</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                        <p class="text-sm text-gray-900">edge_01</p>
+                                    </div>
+                                    <p class="text-xs text-gray-500">Warehouse</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="badge bg-red-50 text-red-700">Alarm</span>
+                                    <p class="text-xs text-gray-500 mt-1">turn_on, turn_off</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm font-medium text-gray-900">GPIO</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-xs space-y-0.5">
+                                        <p class="text-gray-600">Pin: 17</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm font-semibold text-hawk-primary">2 rules</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-xs font-medium text-green-600">● Online</span>
+                                </td>
+                            </tr>
 
-                    <div class="space-y-3 mb-4">
-                        <div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase mb-1.5">Edge Device</p>
-                            <div class="flex items-center space-x-2">
-                                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                                <span class="text-sm font-medium text-gray-900">edge_01 (Warehouse)</span>
-                            </div>
-                        </div>
+                            <!-- Device Row 2 -->
+                            <tr class="table-row-hover" onclick="editDevice('gate_12')">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-md">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Gate 12 Controller</p>
+                                            <p class="text-xs text-gray-500">ID: gate_12</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                        <p class="text-sm text-gray-900">edge_01</p>
+                                    </div>
+                                    <p class="text-xs text-gray-500">Warehouse</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="badge bg-blue-50 text-blue-700">Access Control</span>
+                                    <p class="text-xs text-gray-500 mt-1">open, close</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm font-medium text-gray-900">Modbus</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-xs space-y-0.5">
+                                        <p class="text-gray-600">IP: 192.168.1.100</p>
+                                        <p class="text-gray-600">Coil: 40001</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm font-semibold text-hawk-primary">1 rule</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-xs font-medium text-green-600">● Online</span>
+                                </td>
+                            </tr>
 
-                        <div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase mb-1.5">Capabilities</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="badge bg-red-50 text-red-700">Alarm</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">turn_on, turn_off</p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase mb-1.5">Hardware Details</p>
-                            <div class="bg-gray-50 rounded-lg p-3 space-y-1">
-                                <div class="flex justify-between text-xs">
-                                    <span class="text-gray-600">Connector:</span>
-                                    <span class="font-medium text-gray-900">GPIO</span>
-                                </div>
-                                <div class="flex justify-between text-xs">
-                                    <span class="text-gray-600">Pin:</span>
-                                    <span class="font-medium text-gray-900">17</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-3 border-t border-gray-200">
-                        <div class="flex items-center justify-between text-xs text-gray-500">
-                            <span>Used in <strong class="text-hawk-primary">2 rules</strong></span>
-                            <span class="text-green-600 font-medium">● Online</span>
-                        </div>
-                    </div>
+                            <!-- Device Row 3 -->
+                            <tr class="table-row-hover" onclick="editDevice('cnc_a1')">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-md">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">CNC Machine A1</p>
+                                            <p class="text-xs text-gray-500">ID: cnc_a1</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                        <p class="text-sm text-gray-900">edge_02</p>
+                                    </div>
+                                    <p class="text-xs text-gray-500">Production</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="badge bg-orange-50 text-orange-700">Machine Power</span>
+                                    <p class="text-xs text-gray-500 mt-1">start, stop, emergency_stop</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm font-medium text-gray-900">PLC</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-xs space-y-0.5">
+                                        <p class="text-gray-600">Protocol: S7</p>
+                                        <p class="text-gray-600">DB: DB1.DBX0.0</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm font-semibold text-hawk-primary">1 rule</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-xs font-medium text-green-600">● Online</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-
-                <!-- Device Card 2 -->
-                <div class="glass-effect rounded-xl p-6 shadow-md border border-gray-200 card-hover">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-md">
-                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-base font-bold text-gray-900">Gate 12 Controller</h3>
-                                <p class="text-xs text-gray-500 mt-0.5">ID: gate_12</p>
-                            </div>
-                        </div>
-                        <button class="text-gray-400 hover:text-gray-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="space-y-3 mb-4">
-                        <div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase mb-1.5">Edge Device</p>
-                            <div class="flex items-center space-x-2">
-                                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                                <span class="text-sm font-medium text-gray-900">edge_01 (Warehouse)</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase mb-1.5">Capabilities</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="badge bg-blue-50 text-blue-700">Access Control</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">open, close</p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase mb-1.5">Hardware Details</p>
-                            <div class="bg-gray-50 rounded-lg p-3 space-y-1">
-                                <div class="flex justify-between text-xs">
-                                    <span class="text-gray-600">Connector:</span>
-                                    <span class="font-medium text-gray-900">Modbus</span>
-                                </div>
-                                <div class="flex justify-between text-xs">
-                                    <span class="text-gray-600">IP:</span>
-                                    <span class="font-medium text-gray-900">192.168.1.100</span>
-                                </div>
-                                <div class="flex justify-between text-xs">
-                                    <span class="text-gray-600">Coil:</span>
-                                    <span class="font-medium text-gray-900">40001</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-3 border-t border-gray-200">
-                        <div class="flex items-center justify-between text-xs text-gray-500">
-                            <span>Used in <strong class="text-hawk-primary">1 rule</strong></span>
-                            <span class="text-green-600 font-medium">● Online</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Device Card 3 -->
-                <div class="glass-effect rounded-xl p-6 shadow-md border border-gray-200 card-hover">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-md">
-                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-base font-bold text-gray-900">CNC Machine A1</h3>
-                                <p class="text-xs text-gray-500 mt-0.5">ID: cnc_a1</p>
-                            </div>
-                        </div>
-                        <button class="text-gray-400 hover:text-gray-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="space-y-3 mb-4">
-                        <div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase mb-1.5">Edge Device</p>
-                            <div class="flex items-center space-x-2">
-                                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                                <span class="text-sm font-medium text-gray-900">edge_02 (Production)</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase mb-1.5">Capabilities</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="badge bg-orange-50 text-orange-700">Machine Power</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">start, stop, emergency_stop</p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase mb-1.5">Hardware Details</p>
-                            <div class="bg-gray-50 rounded-lg p-3 space-y-1">
-                                <div class="flex justify-between text-xs">
-                                    <span class="text-gray-600">Connector:</span>
-                                    <span class="font-medium text-gray-900">PLC</span>
-                                </div>
-                                <div class="flex justify-between text-xs">
-                                    <span class="text-gray-600">Protocol:</span>
-                                    <span class="font-medium text-gray-900">S7</span>
-                                </div>
-                                <div class="flex justify-between text-xs">
-                                    <span class="text-gray-600">DB:</span>
-                                    <span class="font-medium text-gray-900">DB1.DBX0.0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-3 border-t border-gray-200">
-                        <div class="flex items-center justify-between text-xs text-gray-500">
-                            <span>Used in <strong class="text-hawk-primary">1 rule</strong></span>
-                            <span class="text-green-600 font-medium">● Online</span>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
 
-        <!-- CAPABILITIES VIEW -->
+        <!-- CAPABILITIES VIEW (Table) -->
         <div id="capabilities-view" class="tab-content hidden">
             
             <div class="glass-effect rounded-xl p-6 shadow-md border border-gray-200 mb-6">
-                <div class="flex items-start space-x-4">
-                    <div class="w-12 h-12 bg-hawk-secondary/10 rounded-xl flex items-center justify-center">
-                        <svg class="w-7 h-7 text-hawk-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-hawk-secondary/10 rounded-xl flex items-center justify-center">
+                            <svg class="w-7 h-7 text-hawk-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-1">Capability Registry</h3>
+                            <p class="text-sm text-gray-600">Standard capabilities define what devices can do. Upload JSON files to add custom capabilities.</p>
+                        </div>
+                    </div>
+                    <button onclick="openUploadCapabilityModal()" class="px-6 py-2.5 bg-gradient-to-r from-hawk-primary to-hawk-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-1">Capability Registry</h3>
-                        <p class="text-sm text-gray-600">Standard capabilities define what devices can do. These are semantic contracts that remain stable across hardware changes.</p>
-                    </div>
+                        <span>Add Capability</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Capabilities Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <!-- Capability Card 1 -->
-                <div class="glass-effect rounded-xl p-6 shadow-md border border-gray-200">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900">Alarm</h3>
-                                <p class="text-xs text-gray-500">Audible warning devices</p>
-                            </div>
-                        </div>
-                        <span class="badge bg-green-50 text-green-700">Stable</span>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div>
-                            <p class="text-sm font-semibold text-gray-700 mb-2">Commands</p>
-                            
-                            <div class="space-y-2">
-                                <div class="bg-gray-50 rounded-lg p-3">
-                                    <p class="text-sm font-medium text-gray-900 mb-2">turn_on</p>
-                                    <div class="space-y-1 text-xs">
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-gray-600">duration_sec</span>
-                                            <span class="font-mono text-gray-900">int (1-300)</span>
+            <!-- Capabilities Table -->
+            <div class="glass-effect rounded-xl shadow-md border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-hawk-primary to-hawk-secondary text-white">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Capability</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Commands</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Safety Policy</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Compatible Connectors</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <!-- Capability Row 1 -->
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                                            </svg>
                                         </div>
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-gray-600">pattern</span>
-                                            <span class="font-mono text-gray-900">enum: steady, pulse</span>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Alarm</p>
+                                            <p class="text-xs text-gray-500">Audible warning devices</p>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="bg-gray-50 rounded-lg p-3">
-                                    <p class="text-sm font-medium text-gray-900">turn_off</p>
-                                    <p class="text-xs text-gray-500 mt-1">No parameters</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p class="text-sm font-semibold text-gray-700 mb-2">Safety Policy</p>
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                                <div class="flex items-start space-x-2">
-                                    <svg class="w-4 h-4 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                    </svg>
-                                    <div class="text-xs space-y-1">
-                                        <p><span class="font-semibold">Min Confidence:</span> 0.8</p>
-                                        <p><span class="font-semibold">Cooldown:</span> 60 seconds</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="space-y-1">
+                                        <p class="text-xs"><span class="font-semibold text-gray-900">turn_on:</span> <span class="text-gray-600">duration_sec, pattern</span></p>
+                                        <p class="text-xs"><span class="font-semibold text-gray-900">turn_off:</span> <span class="text-gray-600">none</span></p>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-xs space-y-0.5">
+                                        <p class="text-gray-700">Min Confidence: <span class="font-semibold">0.8</span></p>
+                                        <p class="text-gray-700">Cooldown: <span class="font-semibold">60s</span></p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="badge bg-gray-100 text-gray-700">GPIO</span>
+                                        <span class="badge bg-gray-100 text-gray-700">Modbus</span>
+                                        <span class="badge bg-gray-100 text-gray-700">HTTP</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="badge bg-green-50 text-green-700">Stable</span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <button onclick="downloadCapability('alarm')" class="text-hawk-primary hover:text-hawk-secondary transition-colors" title="Download JSON">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
 
-                    <div class="mt-4 pt-3 border-t border-gray-200 text-xs text-gray-500">
-                        Compatible with: GPIO, Modbus, HTTP, MQTT connectors
-                    </div>
+                            <!-- Capability Row 2 -->
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Access Control</p>
+                                            <p class="text-xs text-gray-500">Gate and barrier control</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="space-y-1">
+                                        <p class="text-xs"><span class="font-semibold text-gray-900">open:</span> <span class="text-gray-600">duration_sec, auto_close</span></p>
+                                        <p class="text-xs"><span class="font-semibold text-gray-900">close:</span> <span class="text-gray-600">none</span></p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-xs space-y-0.5">
+                                        <p class="text-gray-700">Min Confidence: <span class="font-semibold">0.95</span></p>
+                                        <p class="text-gray-700">Cooldown: <span class="font-semibold">10s</span></p>
+                                        <p class="text-gray-700">Max/hour: <span class="font-semibold">50</span></p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="badge bg-gray-100 text-gray-700">Modbus</span>
+                                        <span class="badge bg-gray-100 text-gray-700">HTTP</span>
+                                        <span class="badge bg-gray-100 text-gray-700">Relay</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="badge bg-green-50 text-green-700">Stable</span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <button onclick="downloadCapability('access_control')" class="text-hawk-primary hover:text-hawk-secondary transition-colors" title="Download JSON">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Capability Row 3 -->
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Machine Power</p>
+                                            <p class="text-xs text-gray-500">Industrial machine control</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="space-y-1">
+                                        <p class="text-xs"><span class="font-semibold text-gray-900">start:</span> <span class="text-gray-600">delay_sec</span></p>
+                                        <p class="text-xs"><span class="font-semibold text-gray-900">stop:</span> <span class="text-gray-600">none</span></p>
+                                        <p class="text-xs"><span class="font-semibold text-gray-900">emergency_stop:</span> <span class="text-gray-600">none</span></p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-xs space-y-0.5">
+                                        <p class="text-gray-700">Min Confidence: <span class="font-semibold">0.9</span></p>
+                                        <p class="text-gray-700">Cooldown: <span class="font-semibold">300s</span></p>
+                                        <p class="text-gray-700">Manual Override: <span class="font-semibold text-red-600">Required</span></p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="badge bg-gray-100 text-gray-700">PLC</span>
+                                        <span class="badge bg-gray-100 text-gray-700">Modbus</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="badge bg-green-50 text-green-700">Stable</span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <button onclick="downloadCapability('machine_power')" class="text-hawk-primary hover:text-hawk-secondary transition-colors" title="Download JSON">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Capability Row 4 -->
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Notification</p>
+                                            <p class="text-xs text-gray-500">Alert and messaging</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="space-y-1">
+                                        <p class="text-xs"><span class="font-semibold text-gray-900">send:</span> <span class="text-gray-600">message, priority, channels</span></p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-xs space-y-0.5">
+                                        <p class="text-gray-700">Min Confidence: <span class="font-semibold">0.7</span></p>
+                                        <p class="text-gray-700">Cooldown: <span class="font-semibold">30s</span></p>
+                                        <p class="text-gray-700">Max/hour: <span class="font-semibold">100</span></p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="badge bg-gray-100 text-gray-700">Email</span>
+                                        <span class="badge bg-gray-100 text-gray-700">SMS</span>
+                                        <span class="badge bg-gray-100 text-gray-700">Webhook</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="badge bg-green-50 text-green-700">Stable</span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <button onclick="downloadCapability('notification')" class="text-hawk-primary hover:text-hawk-secondary transition-colors" title="Download JSON">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-
-                <!-- Capability Card 2 -->
-                <div class="glass-effect rounded-xl p-6 shadow-md border border-gray-200">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900">Access Control</h3>
-                                <p class="text-xs text-gray-500">Gate and barrier control</p>
-                            </div>
-                        </div>
-                        <span class="badge bg-green-50 text-green-700">Stable</span>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div>
-                            <p class="text-sm font-semibold text-gray-700 mb-2">Commands</p>
-                            
-                            <div class="space-y-2">
-                                <div class="bg-gray-50 rounded-lg p-3">
-                                    <p class="text-sm font-medium text-gray-900 mb-2">open</p>
-                                    <div class="space-y-1 text-xs">
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-gray-600">duration_sec</span>
-                                            <span class="font-mono text-gray-900">int (1-60)</span>
-                                        </div>
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-gray-600">auto_close</span>
-                                            <span class="font-mono text-gray-900">boolean</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="bg-gray-50 rounded-lg p-3">
-                                    <p class="text-sm font-medium text-gray-900">close</p>
-                                    <p class="text-xs text-gray-500 mt-1">No parameters</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p class="text-sm font-semibold text-gray-700 mb-2">Safety Policy</p>
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                                <div class="flex items-start space-x-2">
-                                    <svg class="w-4 h-4 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                    </svg>
-                                    <div class="text-xs space-y-1">
-                                        <p><span class="font-semibold">Min Confidence:</span> 0.95</p>
-                                        <p><span class="font-semibold">Cooldown:</span> 10 seconds</p>
-                                        <p><span class="font-semibold">Max per hour:</span> 50</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 pt-3 border-t border-gray-200 text-xs text-gray-500">
-                        Compatible with: Modbus, HTTP, Relay connectors
-                    </div>
-                </div>
-
-                <!-- Capability Card 3 -->
-                <div class="glass-effect rounded-xl p-6 shadow-md border border-gray-200">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900">Machine Power</h3>
-                                <p class="text-xs text-gray-500">Industrial machine control</p>
-                            </div>
-                        </div>
-                        <span class="badge bg-green-50 text-green-700">Stable</span>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div>
-                            <p class="text-sm font-semibold text-gray-700 mb-2">Commands</p>
-                            
-                            <div class="space-y-2">
-                                <div class="bg-gray-50 rounded-lg p-3">
-                                    <p class="text-sm font-medium text-gray-900 mb-2">start</p>
-                                    <div class="space-y-1 text-xs">
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-gray-600">delay_sec</span>
-                                            <span class="font-mono text-gray-900">int (0-30)</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="bg-gray-50 rounded-lg p-3">
-                                    <p class="text-sm font-medium text-gray-900">stop</p>
-                                    <p class="text-xs text-gray-500 mt-1">No parameters</p>
-                                </div>
-
-                                <div class="bg-gray-50 rounded-lg p-3">
-                                    <p class="text-sm font-medium text-gray-900">emergency_stop</p>
-                                    <p class="text-xs text-red-600 mt-1">Immediate safety shutdown</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p class="text-sm font-semibold text-gray-700 mb-2">Safety Policy</p>
-                            <div class="bg-red-50 border border-red-200 rounded-lg p-3">
-                                <div class="flex items-start space-x-2">
-                                    <svg class="w-4 h-4 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                    </svg>
-                                    <div class="text-xs space-y-1">
-                                        <p><span class="font-semibold">Min Confidence:</span> 0.9</p>
-                                        <p><span class="font-semibold">Cooldown:</span> 300 seconds</p>
-                                        <p><span class="font-semibold">Manual Override:</span> Required</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 pt-3 border-t border-gray-200 text-xs text-gray-500">
-                        Compatible with: PLC, Modbus, Industrial protocols
-                    </div>
-                </div>
-
-                <!-- Capability Card 4 -->
-                <div class="glass-effect rounded-xl p-6 shadow-md border border-gray-200">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900">Notification</h3>
-                                <p class="text-xs text-gray-500">Alert and messaging</p>
-                            </div>
-                        </div>
-                        <span class="badge bg-green-50 text-green-700">Stable</span>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div>
-                            <p class="text-sm font-semibold text-gray-700 mb-2">Commands</p>
-                            
-                            <div class="space-y-2">
-                                <div class="bg-gray-50 rounded-lg p-3">
-                                    <p class="text-sm font-medium text-gray-900 mb-2">send</p>
-                                    <div class="space-y-1 text-xs">
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-gray-600">message</span>
-                                            <span class="font-mono text-gray-900">string</span>
-                                        </div>
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-gray-600">priority</span>
-                                            <span class="font-mono text-gray-900">enum: low, medium, high</span>
-                                        </div>
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-gray-600">channels</span>
-                                            <span class="font-mono text-gray-900">array</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p class="text-sm font-semibold text-gray-700 mb-2">Safety Policy</p>
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                                <div class="flex items-start space-x-2">
-                                    <svg class="w-4 h-4 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                    </svg>
-                                    <div class="text-xs space-y-1">
-                                        <p><span class="font-semibold">Min Confidence:</span> 0.7</p>
-                                        <p><span class="font-semibold">Cooldown:</span> 30 seconds</p>
-                                        <p><span class="font-semibold">Max per hour:</span> 100</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 pt-3 border-t border-gray-200 text-xs text-gray-500">
-                        Compatible with: Email, SMS, Webhook, Slack connectors
-                    </div>
-                </div>
-
             </div>
         </div>
 
     </div>
 
-    <!-- Add Device Modal (Hidden by default) -->
-    <div id="addDeviceModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="glass-effect rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div class="sticky top-0 glass-effect border-b border-gray-200 p-6 rounded-t-2xl">
+    <!-- Upload Capability Modal -->
+    <div id="uploadCapabilityModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="glass-effect rounded-2xl max-w-lg w-full shadow-2xl">
+            <div class="border-b border-gray-200 p-6">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-2xl font-bold text-gray-900">Add New Device</h2>
-                    <button onclick="closeAddDeviceModal()" class="text-gray-400 hover:text-gray-600">
+                    <h2 class="text-2xl font-bold text-gray-900">Upload Capability</h2>
+                    <button onclick="closeUploadCapabilityModal()" class="text-gray-400 hover:text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -874,297 +679,37 @@
                 </div>
             </div>
 
-            <div class="p-6 space-y-6">
-                <!-- Step 1: Basic Info -->
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">1. Basic Information</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Device Name</label>
-                            <input type="text" placeholder="e.g., Hooter Warehouse 2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Device ID (Unique Identifier)</label>
-                            <input type="text" placeholder="e.g., hooter_wh_2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Edge Device</label>
-                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
-                                <option>Select edge device...</option>
-                                <option>edge_01 (Warehouse)</option>
-                                <option>edge_02 (Production Floor)</option>
-                                <option>edge_03 (Gate Area)</option>
-                            </select>
-                        </div>
-                    </div>
+            <div class="p-6">
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-hawk-secondary transition-colors cursor-pointer">
+                    <input type="file" id="capabilityFileInput" accept=".json" class="hidden" onchange="handleCapabilityFileSelect(event)">
+                    <label for="capabilityFileInput" class="cursor-pointer">
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        <p class="text-sm font-semibold text-gray-900 mb-1">Click to upload capability JSON</p>
+                        <p class="text-xs text-gray-500">or drag and drop</p>
+                    </label>
                 </div>
 
-                <!-- Step 2: Capability Selection -->
-                <div class="border-t border-gray-200 pt-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">2. Capability Configuration</h3>
-                    
-                    <div class="space-y-4">
-                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <div class="flex items-start justify-between mb-3">
-                                <p class="text-sm font-semibold text-gray-700">Capability 1</p>
-                                <button class="text-red-600 hover:text-red-700 text-sm">Remove</button>
-                            </div>
-                            
-                            <div class="space-y-3">
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Capability Type</label>
-                                    <select id="capabilityType1" onchange="updateCommandsForCapability('capabilityType1', 'commandList1')" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
-                                        <option>Select capability...</option>
-                                        <option value="alarm">Alarm</option>
-                                        <option value="access_control">Access Control</option>
-                                        <option value="machine_power">Machine Power</option>
-                                        <option value="notification">Notification</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Available Commands</label>
-                                    <div id="commandList1" class="space-y-1.5">
-                                        <p class="text-xs text-gray-500 italic">Select a capability to see available commands</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button class="w-full py-2 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-hawk-secondary hover:text-hawk-secondary transition-colors font-medium text-sm">
-                            + Add Another Capability
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Step 3: Hardware Mapping -->
-                <div class="border-t border-gray-200 pt-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">3. Hardware Mapping</h3>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Connector Type</label>
-                            <select id="connectorType" onchange="updateHardwareFields()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
-                                <option>Select connector...</option>
-                                <option value="gpio">GPIO</option>
-                                <option value="modbus">Modbus</option>
-                                <option value="http">HTTP/REST API</option>
-                                <option value="plc">PLC (S7/Industrial)</option>
-                                <option value="mqtt">MQTT</option>
-                            </select>
-                        </div>
-
-                        <!-- GPIO Fields -->
-                        <div id="gpioFields" class="hidden space-y-4">
-                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <p class="text-sm font-semibold text-gray-900 mb-3">GPIO Configuration</p>
-                                
-                                <div class="space-y-3">
-                                    <div>
-                                        <p class="text-xs font-medium text-gray-700 mb-2">Command: turn_on</p>
-                                        <div class="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <label class="block text-xs text-gray-600 mb-1">Pin Number</label>
-                                                <input type="number" placeholder="17" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs text-gray-600 mb-1">Value</label>
-                                                <select class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                                    <option>1 (HIGH)</option>
-                                                    <option>0 (LOW)</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <p class="text-xs font-medium text-gray-700 mb-2">Command: turn_off</p>
-                                        <div class="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <label class="block text-xs text-gray-600 mb-1">Pin Number</label>
-                                                <input type="number" placeholder="17" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs text-gray-600 mb-1">Value</label>
-                                                <select class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                                    <option>0 (LOW)</option>
-                                                    <option>1 (HIGH)</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Modbus Fields -->
-                        <div id="modbusFields" class="hidden space-y-4">
-                            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                                <p class="text-sm font-semibold text-gray-900 mb-3">Modbus Configuration</p>
-                                
-                                <div class="space-y-3">
-                                    <div class="grid grid-cols-3 gap-3">
-                                        <div class="col-span-2">
-                                            <label class="block text-xs text-gray-600 mb-1">IP Address</label>
-                                            <input type="text" placeholder="192.168.1.100" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs text-gray-600 mb-1">Port</label>
-                                            <input type="number" placeholder="502" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-xs text-gray-600 mb-1">Slave ID</label>
-                                        <input type="number" placeholder="1" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                    </div>
-
-                                    <div>
-                                        <p class="text-xs font-medium text-gray-700 mb-2">Command: turn_on</p>
-                                        <div class="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <label class="block text-xs text-gray-600 mb-1">Coil Address</label>
-                                                <input type="number" placeholder="40001" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs text-gray-600 mb-1">Value</label>
-                                                <input type="number" placeholder="1" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <p class="text-xs font-medium text-gray-700 mb-2">Command: turn_off</p>
-                                        <div class="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <label class="block text-xs text-gray-600 mb-1">Coil Address</label>
-                                                <input type="number" placeholder="40001" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs text-gray-600 mb-1">Value</label>
-                                                <input type="number" placeholder="0" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- HTTP Fields -->
-                        <div id="httpFields" class="hidden space-y-4">
-                            <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                                <p class="text-sm font-semibold text-gray-900 mb-3">HTTP/REST API Configuration</p>
-                                
-                                <div class="space-y-3">
-                                    <div>
-                                        <label class="block text-xs text-gray-600 mb-1">Base URL</label>
-                                        <input type="text" placeholder="http://device.local/api" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-xs text-gray-600 mb-1">Authentication (Optional)</label>
-                                        <input type="text" placeholder="API Key or Bearer Token" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                    </div>
-
-                                    <div>
-                                        <p class="text-xs font-medium text-gray-700 mb-2">Command: turn_on</p>
-                                        <div class="space-y-2">
-                                            <div>
-                                                <label class="block text-xs text-gray-600 mb-1">Endpoint</label>
-                                                <input type="text" placeholder="/alarm/on" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                            </div>
-                                            <div class="grid grid-cols-2 gap-3">
-                                                <div>
-                                                    <label class="block text-xs text-gray-600 mb-1">Method</label>
-                                                    <select class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                                        <option>POST</option>
-                                                        <option>GET</option>
-                                                        <option>PUT</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label class="block text-xs text-gray-600 mb-1">Content-Type</label>
-                                                    <select class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                                        <option>application/json</option>
-                                                        <option>application/x-www-form-urlencoded</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs text-gray-600 mb-1">Request Body (JSON)</label>
-                                                <textarea placeholder='{"duration": "{{duration_sec}}", "pattern": "{{pattern}}"}' rows="2" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none font-mono"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- PLC Fields -->
-                        <div id="plcFields" class="hidden space-y-4">
-                            <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                                <p class="text-sm font-semibold text-gray-900 mb-3">PLC Configuration</p>
-                                
-                                <div class="space-y-3">
-                                    <div>
-                                        <label class="block text-xs text-gray-600 mb-1">Protocol</label>
-                                        <select class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                            <option>Siemens S7</option>
-                                            <option>Allen-Bradley</option>
-                                            <option>Modbus TCP</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label class="block text-xs text-gray-600 mb-1">IP Address</label>
-                                            <input type="text" placeholder="192.168.1.50" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs text-gray-600 mb-1">Rack/Slot</label>
-                                            <input type="text" placeholder="0/1" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <p class="text-xs font-medium text-gray-700 mb-2">Command: stop</p>
-                                        <div>
-                                            <label class="block text-xs text-gray-600 mb-1">Data Block Address</label>
-                                            <input type="text" placeholder="DB1.DBX0.0" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Test Connection -->
-                <div class="border-t border-gray-200 pt-6">
-                    <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-semibold text-gray-900">Test Connection</p>
-                            <p class="text-xs text-gray-600 mt-0.5">Verify device responds before saving</p>
-                        </div>
-                        <button class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm">
-                            Test Now
-                        </button>
-                    </div>
+                <div id="filePreview" class="hidden mt-4 bg-gray-50 rounded-lg p-4">
+                    <p class="text-sm font-semibold text-gray-900 mb-2">Selected File:</p>
+                    <p id="fileName" class="text-xs text-gray-600 mb-3"></p>
+                    <pre id="fileContent" class="text-xs bg-white p-3 rounded border border-gray-200 overflow-auto max-h-64"></pre>
                 </div>
             </div>
 
-            <div class="sticky bottom-0 glass-effect border-t border-gray-200 p-6 rounded-b-2xl flex justify-end space-x-3">
-                <button onclick="closeAddDeviceModal()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+            <div class="border-t border-gray-200 p-6 flex justify-end space-x-3">
+                <button onclick="closeUploadCapabilityModal()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
                     Cancel
                 </button>
-                <button class="px-6 py-2 bg-gradient-to-r from-hawk-primary to-hawk-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold">
-                    Add Device
+                <button id="uploadBtn" onclick="uploadCapability()" class="px-6 py-2 bg-gradient-to-r from-hawk-primary to-hawk-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Upload Capability
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Create Rule Modal (Hidden by default) -->
+    <!-- Create Rule Modal -->
     <div id="createRuleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div class="glass-effect rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div class="sticky top-0 glass-effect border-b border-gray-200 p-6 rounded-t-2xl">
@@ -1356,30 +901,533 @@
         </div>
     </div>
 
+    <!-- Add Device Modal -->
+    <div id="addDeviceModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="glass-effect rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="sticky top-0 glass-effect border-b border-gray-200 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-2xl font-bold text-gray-900">Add New Device</h2>
+                    <button onclick="closeAddDeviceModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <!-- Step 1: Basic Info -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">1. Basic Information</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Device Name</label>
+                            <input type="text" placeholder="e.g., Hooter Warehouse 2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Device ID (Unique Identifier)</label>
+                            <input type="text" placeholder="e.g., hooter_wh_2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Edge Device</label>
+                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
+                                <option>Select edge device...</option>
+                                <option>edge_01 (Warehouse)</option>
+                                <option>edge_02 (Production Floor)</option>
+                                <option>edge_03 (Gate Area)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Capability Selection -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">2. Capability Configuration</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <div class="flex items-start justify-between mb-3">
+                                <p class="text-sm font-semibold text-gray-700">Capability 1</p>
+                                <button class="text-red-600 hover:text-red-700 text-sm">Remove</button>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Capability Type</label>
+                                    <select id="capabilityType1" onchange="updateCommandsForCapability('capabilityType1', 'commandList1')" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
+                                        <option>Select capability...</option>
+                                        <option value="alarm">Alarm</option>
+                                        <option value="access_control">Access Control</option>
+                                        <option value="machine_power">Machine Power</option>
+                                        <option value="notification">Notification</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Available Commands</label>
+                                    <div id="commandList1" class="space-y-1.5">
+                                        <p class="text-xs text-gray-500 italic">Select a capability to see available commands</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full py-2 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-hawk-secondary hover:text-hawk-secondary transition-colors font-medium text-sm">
+                            + Add Another Capability
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Hardware Mapping -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">3. Hardware Mapping</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Connector Type</label>
+                            <select id="connectorType" onchange="updateHardwareFields()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
+                                <option>Select connector...</option>
+                                <option value="gpio">GPIO</option>
+                                <option value="modbus">Modbus</option>
+                                <option value="http">HTTP/REST API</option>
+                                <option value="plc">PLC (S7/Industrial)</option>
+                                <option value="mqtt">MQTT</option>
+                            </select>
+                        </div>
+
+                        <!-- GPIO Fields -->
+                        <div id="gpioFields" class="hidden space-y-4">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <p class="text-sm font-semibold text-gray-900 mb-3">GPIO Configuration</p>
+                                
+                                <div class="space-y-3">
+                                    <div>
+                                        <p class="text-xs font-medium text-gray-700 mb-2">Command: turn_on</p>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Pin Number</label>
+                                                <input type="number" placeholder="17" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Value</label>
+                                                <select class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                                    <option>1 (HIGH)</option>
+                                                    <option>0 (LOW)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <p class="text-xs font-medium text-gray-700 mb-2">Command: turn_off</p>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Pin Number</label>
+                                                <input type="number" placeholder="17" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Value</label>
+                                                <select class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                                    <option>0 (LOW)</option>
+                                                    <option>1 (HIGH)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modbus Fields -->
+                        <div id="modbusFields" class="hidden space-y-4">
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                <p class="text-sm font-semibold text-gray-900 mb-3">Modbus Configuration</p>
+                                
+                                <div class="space-y-3">
+                                    <div class="grid grid-cols-3 gap-3">
+                                        <div class="col-span-2">
+                                            <label class="block text-xs text-gray-600 mb-1">IP Address</label>
+                                            <input type="text" placeholder="192.168.1.100" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">Port</label>
+                                            <input type="number" placeholder="502" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">Slave ID</label>
+                                        <input type="number" placeholder="1" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                    </div>
+
+                                    <div>
+                                        <p class="text-xs font-medium text-gray-700 mb-2">Command Mapping</p>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Coil Address</label>
+                                                <input type="number" placeholder="40001" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Value</label>
+                                                <input type="number" placeholder="1" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HTTP Fields -->
+                        <div id="httpFields" class="hidden space-y-4">
+                            <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                                <p class="text-sm font-semibold text-gray-900 mb-3">HTTP/REST API Configuration</p>
+                                
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">Base URL</label>
+                                        <input type="text" placeholder="http://device.local/api" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">Authentication (Optional)</label>
+                                        <input type="text" placeholder="API Key or Bearer Token" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                    </div>
+
+                                    <div>
+                                        <p class="text-xs font-medium text-gray-700 mb-2">Endpoint Configuration</p>
+                                        <div class="space-y-2">
+                                            <div>
+                                                <label class="block text-xs text-gray-600 mb-1">Endpoint</label>
+                                                <input type="text" placeholder="/alarm/on" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label class="block text-xs text-gray-600 mb-1">Method</label>
+                                                    <select class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                                        <option>POST</option>
+                                                        <option>GET</option>
+                                                        <option>PUT</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs text-gray-600 mb-1">Content-Type</label>
+                                                    <select class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                                        <option>application/json</option>
+                                                        <option>application/x-www-form-urlencoded</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PLC Fields -->
+                        <div id="plcFields" class="hidden space-y-4">
+                            <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                                <p class="text-sm font-semibold text-gray-900 mb-3">PLC Configuration</p>
+                                
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">Protocol</label>
+                                        <select class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                            <option>Siemens S7</option>
+                                            <option>Allen-Bradley</option>
+                                            <option>Modbus TCP</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">IP Address</label>
+                                            <input type="text" placeholder="192.168.1.50" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-600 mb-1">Rack/Slot</label>
+                                            <input type="text" placeholder="0/1" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">Data Block Address</label>
+                                        <input type="text" placeholder="DB1.DBX0.0" class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-hawk-secondary outline-none">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Connection -->
+                <div class="border-t border-gray-200 pt-6">
+                    <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-900">Test Connection</p>
+                            <p class="text-xs text-gray-600 mt-0.5">Verify device responds before saving</p>
+                        </div>
+                        <button class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm">
+                            Test Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sticky bottom-0 glass-effect border-t border-gray-200 p-6 rounded-b-2xl flex justify-end space-x-3">
+                <button onclick="closeAddDeviceModal()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                    Cancel
+                </button>
+                <button class="px-6 py-2 bg-gradient-to-r from-hawk-primary to-hawk-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold">
+                    Add Device
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Rule Modal (Simplified - same structure as Create Rule) -->
+    <div id="editRuleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="glass-effect rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="sticky top-0 glass-effect border-b border-gray-200 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-2xl font-bold text-gray-900">Edit Rule: <span id="editRuleTitle"></span></h2>
+                    <button onclick="closeEditRuleModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <p class="text-sm text-gray-600">Rule data will be pre-filled here. Same form as Create Rule.</p>
+                <!-- Copy the same form structure from Create Rule modal -->
+            </div>
+
+            <div class="sticky bottom-0 glass-effect border-t border-gray-200 p-6 rounded-b-2xl flex justify-end space-x-3">
+                <button onclick="closeEditRuleModal()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                    Cancel
+                </button>
+                <button class="px-6 py-2 bg-gradient-to-r from-hawk-primary to-hawk-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Device Modal (Simplified - same structure as Add Device) -->
+    <div id="editDeviceModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="glass-effect rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="sticky top-0 glass-effect border-b border-gray-200 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-2xl font-bold text-gray-900">Edit Device: <span id="editDeviceTitle"></span></h2>
+                    <button onclick="closeEditDeviceModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <p class="text-sm text-gray-600">Device data will be pre-filled here. Same form as Add Device.</p>
+                <!-- Copy the same form structure from Add Device modal -->
+            </div>
+
+            <div class="sticky bottom-0 glass-effect border-t border-gray-200 p-6 rounded-b-2xl flex justify-end space-x-3">
+                <button onclick="closeEditDeviceModal()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                    Cancel
+                </button>
+                <button class="px-6 py-2 bg-gradient-to-r from-hawk-primary to-hawk-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Sample capability data
+        const capabilityData = {
+            alarm: {
+                capability: "alarm",
+                description: "Audible warning devices",
+                commands: {
+                    turn_on: {
+                        params_schema: {
+                            duration_sec: { type: "int", min: 1, max: 300 },
+                            pattern: { enum: ["steady", "pulse"] }
+                        }
+                    },
+                    turn_off: {}
+                },
+                safety_policy: {
+                    min_confidence: 0.8,
+                    cooldown_sec: 60
+                },
+                compatible_connectors: ["GPIO", "Modbus", "HTTP", "MQTT"]
+            },
+            access_control: {
+                capability: "access_control",
+                description: "Gate and barrier control",
+                commands: {
+                    open: {
+                        params_schema: {
+                            duration_sec: { type: "int", min: 1, max: 60 },
+                            auto_close: { type: "boolean" }
+                        }
+                    },
+                    close: {}
+                },
+                safety_policy: {
+                    min_confidence: 0.95,
+                    cooldown_sec: 10,
+                    max_per_hour: 50
+                },
+                compatible_connectors: ["Modbus", "HTTP", "Relay"]
+            },
+            machine_power: {
+                capability: "machine_power",
+                description: "Industrial machine control",
+                commands: {
+                    start: {
+                        params_schema: {
+                            delay_sec: { type: "int", min: 0, max: 30 }
+                        }
+                    },
+                    stop: {},
+                    emergency_stop: {}
+                },
+                safety_policy: {
+                    min_confidence: 0.9,
+                    cooldown_sec: 300,
+                    requires_manual_override: true
+                },
+                compatible_connectors: ["PLC", "Modbus"]
+            },
+            notification: {
+                capability: "notification",
+                description: "Alert and messaging",
+                commands: {
+                    send: {
+                        params_schema: {
+                            message: { type: "string" },
+                            priority: { enum: ["low", "medium", "high"] },
+                            channels: { type: "array" }
+                        }
+                    }
+                },
+                safety_policy: {
+                    min_confidence: 0.7,
+                    cooldown_sec: 30,
+                    max_per_hour: 100
+                },
+                compatible_connectors: ["Email", "SMS", "Webhook", "Slack"]
+            }
+        };
+
         // Tab switching
         function switchTab(tab) {
-            // Hide all tab contents
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.add('hidden');
             });
-            
-            // Show selected tab content
             document.getElementById(tab + '-view').classList.remove('hidden');
             
-            // Update tab button styles
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.classList.remove('bg-hawk-primary', 'text-white', 'shadow-md');
                 button.classList.add('text-gray-600', 'hover:bg-gray-100');
             });
             
-            // Highlight selected tab
             const selectedTab = document.getElementById('tab-' + tab);
             selectedTab.classList.add('bg-hawk-primary', 'text-white', 'shadow-md');
             selectedTab.classList.remove('text-gray-600', 'hover:bg-gray-100');
         }
 
-        // Modal functions
+        // Edit Rule
+        function editRule(ruleId) {
+            console.log('Editing rule:', ruleId);
+            document.getElementById('editRuleTitle').textContent = ruleId;
+            document.getElementById('editRuleModal').classList.remove('hidden');
+            // In production, fetch rule data and pre-fill the form
+        }
+
+        function closeEditRuleModal() {
+            document.getElementById('editRuleModal').classList.add('hidden');
+        }
+
+        // Edit Device
+        function editDevice(deviceId) {
+            console.log('Editing device:', deviceId);
+            document.getElementById('editDeviceTitle').textContent = deviceId;
+            document.getElementById('editDeviceModal').classList.remove('hidden');
+            // In production, fetch device data and pre-fill the form
+        }
+
+        function closeEditDeviceModal() {
+            document.getElementById('editDeviceModal').classList.add('hidden');
+        }
+
+        // Upload Capability
+        function openUploadCapabilityModal() {
+            document.getElementById('uploadCapabilityModal').classList.remove('hidden');
+        }
+
+        function closeUploadCapabilityModal() {
+            document.getElementById('uploadCapabilityModal').classList.add('hidden');
+            document.getElementById('filePreview').classList.add('hidden');
+            document.getElementById('capabilityFileInput').value = '';
+            document.getElementById('uploadBtn').disabled = true;
+        }
+
+        let selectedFile = null;
+
+        function handleCapabilityFileSelect(event) {
+            const file = event.target.files[0];
+            if (file && file.type === 'application/json') {
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const json = JSON.parse(e.target.result);
+                        document.getElementById('fileName').textContent = file.name;
+                        document.getElementById('fileContent').textContent = JSON.stringify(json, null, 2);
+                        document.getElementById('filePreview').classList.remove('hidden');
+                        document.getElementById('uploadBtn').disabled = false;
+                    } catch (error) {
+                        alert('Invalid JSON file');
+                        selectedFile = null;
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Please select a valid JSON file');
+            }
+        }
+
+        function uploadCapability() {
+            if (selectedFile) {
+                console.log('Uploading capability:', selectedFile.name);
+                // In production, send to backend API
+                alert(`Capability "${selectedFile.name}" uploaded successfully!`);
+                closeUploadCapabilityModal();
+            }
+        }
+
+        // Download Capability
+        function downloadCapability(capabilityName) {
+            const data = capabilityData[capabilityName];
+            if (data) {
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${capabilityName}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Create Rule Modal
         function openCreateRuleModal() {
             document.getElementById('createRuleModal').classList.remove('hidden');
         }
@@ -1388,6 +1436,7 @@
             document.getElementById('createRuleModal').classList.add('hidden');
         }
 
+        // Add Device Modal
         function openAddDeviceModal() {
             document.getElementById('addDeviceModal').classList.remove('hidden');
         }
@@ -1460,17 +1509,24 @@
             }
         }
 
-        // Close modal when clicking outside
+        // Close modals on outside click
         document.getElementById('createRuleModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeCreateRuleModal();
-            }
+            if (e.target === this) closeCreateRuleModal();
         });
 
         document.getElementById('addDeviceModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeAddDeviceModal();
-            }
+            if (e.target === this) closeAddDeviceModal();
+        });
+        document.getElementById('uploadCapabilityModal').addEventListener('click', function(e) {
+            if (e.target === this) closeUploadCapabilityModal();
+        });
+
+        document.getElementById('editRuleModal').addEventListener('click', function(e) {
+            if (e.target === this) closeEditRuleModal();
+        });
+
+        document.getElementById('editDeviceModal').addEventListener('click', function(e) {
+            if (e.target === this) closeEditDeviceModal();
         });
     </script>
 
