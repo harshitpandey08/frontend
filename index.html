@@ -732,16 +732,66 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Rule Name</label>
                             <input type="text" placeholder="e.g., Fire Alarm Response" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
                         </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Site & Camera Selection (Side by Side) -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">2. Site & Camera Selection</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Left: Site Selection -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Description (Optional)</label>
-                            <textarea placeholder="Describe what this rule does..." rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none"></textarea>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Site</label>
+                            <select id="siteSelect" onchange="enableCameraSelection()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
+                                <option value="">Select site...</option>
+                                <option value="mumbai">Manufacturing Plant - Mumbai</option>
+                                <option value="pune">Warehouse - Pune</option>
+                            </select>
+                        </div>
+
+                        <!-- Right: Camera Selection -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Camera</label>
+                            <select id="cameraSelect" onchange="showROILocationOptions()" disabled class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                <option value="">Select camera...</option>
+                                <option value="cam_warehouse_1">Camera 1 - Warehouse Entry</option>
+                                <option value="cam_production_2">Camera 2 - Production Floor</option>
+                            </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- Step 2: Trigger Configuration -->
+                <!-- Step 3: ROI & Location Tags (Side by Side - Shows after camera selection) -->
+                <div id="roiLocationSection" class="hidden border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">3. ROI & Location Tags</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Left: ROI Selection -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Region of Interest (ROI)</label>
+                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
+                                <option value="">Select ROI...</option>
+                                <option value="roi_entry">ROI 1 - Entry Zone</option>
+                                <option value="roi_restricted">ROI 2 - Restricted Area</option>
+                            </select>
+                        </div>
+
+                        <!-- Right: Location Tags -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Location Tags</label>
+                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
+                                <option value="">Select Location Tag...</option>
+                                <option value="warehouse_a">Warehouse - Zone A</option>
+                                <option value="production_1">Production Floor - Assembly Line 1</option>
+                                <option value="loading_3">Loading Dock - Bay 3</option>
+                                <option value="chemical">Restricted Area - Chemical Storage</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Trigger Configuration -->
                 <div class="border-t border-gray-200 pt-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">2. Trigger Configuration</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">4. Trigger Configuration</h3>
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Incident Type</label>
@@ -753,6 +803,8 @@
                                 <option>ANPR Match</option>
                                 <option>Near Miss</option>
                                 <option>Intrusion Detection</option>
+                                <option>PPE Violation</option>
+                                <option>Vehicle Speeding</option>
                             </select>
                         </div>
 
@@ -778,9 +830,9 @@
                     </div>
                 </div>
 
-                <!-- Step 3: Action Selection -->
+                <!-- Step 5: Actions -->
                 <div class="border-t border-gray-200 pt-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">3. Actions</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">5. Actions</h3>
                     
                     <div class="space-y-4">
                         <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -831,9 +883,9 @@
                     </div>
                 </div>
 
-                <!-- Step 4: Device Selection -->
+                <!-- Step 6: Target Devices -->
                 <div class="border-t border-gray-200 pt-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">4. Target Devices</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">6. Target Devices</h3>
                     
                     <div class="space-y-3">
                         <input type="text" placeholder="🔍 Search devices by name, ID, or capability..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hawk-secondary focus:border-transparent outline-none">
@@ -866,9 +918,9 @@
                     </div>
                 </div>
 
-                <!-- Step 5: Safety Settings -->
+                <!-- Step 7: Safety Settings -->
                 <div class="border-t border-gray-200 pt-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">5. Safety Settings</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">7. Safety Settings</h3>
                     
                     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 space-y-3">
                         <div class="grid grid-cols-2 gap-4">
@@ -1506,6 +1558,32 @@
                 commandList.innerHTML = html;
             } else {
                 commandList.innerHTML = '<p class="text-xs text-gray-500 italic">Select a capability to see available commands</p>';
+            }
+        }
+
+        // Enable camera selection after site is selected
+        function enableCameraSelection() {
+            const siteSelect = document.getElementById('siteSelect');
+            const cameraSelect = document.getElementById('cameraSelect');
+            
+            if (siteSelect.value) {
+                cameraSelect.disabled = false;
+            } else {
+                cameraSelect.disabled = true;
+                cameraSelect.value = '';
+                document.getElementById('roiLocationSection').classList.add('hidden');
+            }
+        }
+
+        // Show ROI and Location Tag options when camera is selected
+        function showROILocationOptions() {
+            const cameraSelect = document.getElementById('cameraSelect');
+            const roiLocationSection = document.getElementById('roiLocationSection');
+            
+            if (cameraSelect.value) {
+                roiLocationSection.classList.remove('hidden');
+            } else {
+                roiLocationSection.classList.add('hidden');
             }
         }
 
